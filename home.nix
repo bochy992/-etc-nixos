@@ -161,8 +161,8 @@
   };
 
   programs.emacs = {
-    enable = true;
-    package = pkgs.emacs29-pgtk;
+    enable = false;
+    # package = pkgs.emacs29-pgtk;
   };
 
 
