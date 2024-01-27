@@ -7,7 +7,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${tuigreet} --time --remember --cmd Gnome";
+        command = "${tuigreet} --time --remember --cmd sway";
         user = "greeter";
       };
     };
@@ -29,8 +29,6 @@ in
   };
 
   environment.etc."greetd/environments".text = ''
-    Gnome
-  #  fish
-  #  bash
+    sway
   '';
 }

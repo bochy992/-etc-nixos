@@ -1,7 +1,19 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+
+# let
+#     nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
+#     export __NV_PRIME_RENDER_OFFLOAD=1
+#     export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+#     export __GLX_VENDOR_LIBRARY_NAME=nvidia
+#     export __VK_LAYER_NV_optimus=NVIDIA_only
+#     exec -a "$0" "$@"
+#   '';
+# in
+{
+
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
@@ -10,25 +22,24 @@
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     kernelPackages = pkgs.linuxPackages_zen;
-    # extraModulePackages = [ 
-    #   config.boot.kernelPackages.nvidia_x11];
-    # kernelParams = [
-    # "acpi_rev_override"
-    # ];
   };
 
-  #Enable Desktop Environment/Window Manager
-  programs.sway.enable = true;
+security.polkit.enable = true;
+  hardware.opengl.enable = true; # when using QEMU KVM
 
 
-
+  fonts.packages = with pkgs; [
+    (nerdfonts.override { fonts = [ "DroidSansMono" ]; })
+    dejavu_fonts # mind the underscore! most of the packages are named with a hypen, not this one however
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+  ];
 
   # nixpkgs.config.allowAliases = false;
   programs.dconf.enable = true;
   # Nvidia Stuff
   services.thermald.enable = lib.mkDefault true;
-
-
 
   # Define a user account.
   users.users.ilyas = {

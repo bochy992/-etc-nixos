@@ -19,15 +19,43 @@
   #     xxx
   # '';
 
-   # Gnome HiDpi/Fractional Scaling
-  dconf.settings = {
-    "org/gnome/mutter" = {
-      experimental-features = [ "scale-monitor-framebuffer" ];
+  #  # Gnome HiDpi/Fractional Scaling
+  # dconf.settings = {
+  #   "org/gnome/mutter" = {
+  #     experimental-features = [ "scale-monitor-framebuffer" ];
+  #   };
+  # };
+  wayland.windowManager.sway = {
+  enable = true;
+  config = rec {
+    modifier = "Mod4"; # Super key
+    terminal = "alacritty";
+       output = {
+      "eDP-1" = {
+        mode = "2560x1600@120Hz";
+      };
     };
   };
+  extraConfig = ''
+    bindsym Print               exec shotman -c output
+    bindsym Print+Shift         exec shotman -c region
+    bindsym Print+Shift+Control exec shotman -c window
+
+  '';
+};
+
+
+
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
+  #virtual machine
+  qemu_kvm
+    # sway stuff
+    mako
+    wl-clipboard
+    swww
+    shotman
     # here is some command line tools I use frequently
     # feel free to add your own or remove some of them
     alacritty
