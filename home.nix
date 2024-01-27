@@ -106,7 +106,6 @@
     thunderbird
     # programming tools
     vscodium
-    oh-my-posh
     helix
     racket
     python3
@@ -116,6 +115,7 @@
     lazygit
     zoxide
     #shells
+    oh-my-posh
     powershell
     #terminals
     tmux
@@ -160,28 +160,25 @@
     userEmail = "garare992@proton.me";
   };
 
-  programs.emacs = {
-    enable = false;
-    # package = pkgs.emacs29-pgtk;
-  };
 
 
   # alacritty - a cross-platform, GPU-accelerated terminal emulator
   programs.alacritty = {
     enable = true;
     # custom settings
-    settings = {
-      scrolling.multiplier = 5;
-      selection.save_to_clipboard = true;
-    };
+    # settings = {
+    #   scrolling.multiplier = 5;
+    #   selection.save_to_clipboard = true;
+    # };
   };
 
   programs.bash = {
     enable = true;
     enableCompletion = true;
-    # TODO add your cusotm bashrc here
-    # bashrcExtra = ''
-    # '';
+    # add your custom bashrc here
+    bashrcExtra = ''
+    PATH=$PATH:~/.config/emacs/bin
+    '';
 
     # set some aliases, feel free to add more or remove some
     shellAliases = {
