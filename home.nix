@@ -30,16 +30,20 @@
   config = rec {
     modifier = "Mod4"; # Super key
     terminal = "alacritty";
-       output = {
-      "eDP-1" = {
-        mode = "2560x1600@120Hz";
-      };
-    };
   };
   extraConfig = ''
     bindsym Print               exec shotman -c output
     bindsym Print+Shift         exec shotman -c region
     bindsym Print+Shift+Control exec shotman -c window
+    bindsym XF86AudioRaiseVolume exec volumectl -u up
+        bindsym XF86AudioLowerVolume exec volumectl -u down
+bindsym XF86AudioMute exec volumectl toggle-mute
+bindsym XF86AudioMicMute exec volumectl -m toggle-mute
+
+bindsym XF86MonBrightnessUp exec lightctl up
+bindsym XF86MonBrightnessDown exec lightctl down
+
+exec "avizo-service"
 
   '';
 };
