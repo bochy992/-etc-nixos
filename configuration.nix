@@ -254,6 +254,7 @@ package = pkgs.emacs29-pgtk;
     unetbootin
     nvidia-vaapi-driver
     GnomeExtensions.pop-shell
+    mission-center
   ];
 
   services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
