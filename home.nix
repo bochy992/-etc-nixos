@@ -19,34 +19,15 @@
   #     xxx
   # '';
 
-  #  # Gnome HiDpi/Fractional Scaling
-  # dconf.settings = {
-  #   "org/gnome/mutter" = {
-  #     experimental-features = [ "scale-monitor-framebuffer" ];
-  #   };
-  # };
-  wayland.windowManager.sway = {
-  enable = true;
-  config = rec {
-    modifier = "Mod4"; # Super key
-    terminal = "alacritty";
+   # Gnome HiDpi/Fractional Scaling
+  dconf.settings = {
+    "org/gnome/mutter" = {
+      experimental-features = [ "scale-monitor-framebuffer" ];
+    };
   };
-  extraConfig = ''
-    bindsym Print               exec shotman -c output
-    bindsym Print+Shift         exec shotman -c region
-    bindsym Print+Shift+Control exec shotman -c window
-    bindsym XF86AudioRaiseVolume exec volumectl -u up
-        bindsym XF86AudioLowerVolume exec volumectl -u down
-bindsym XF86AudioMute exec volumectl toggle-mute
-bindsym XF86AudioMicMute exec volumectl -m toggle-mute
 
-bindsym XF86MonBrightnessUp exec lightctl up
-bindsym XF86MonBrightnessDown exec lightctl down
 
-exec "avizo-service"
 
-  '';
-};
 
 
 
@@ -55,11 +36,7 @@ exec "avizo-service"
   home.packages = with pkgs; [
   #virtual machine
   qemu_kvm
-    # sway stuff
-    mako
-    wl-clipboard
-    swww
-    shotman
+
     # here is some command line tools I use frequently
     # feel free to add your own or remove some of them
     alacritty
@@ -86,7 +63,6 @@ exec "avizo-service"
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processer https://github.com/mikefarah/yq
     eza # A modern replacement for ‘ls’
-    fzf # A command-line fuzzy finder
 
     # networking tools
     mtr # A network diagnostic tool
@@ -126,6 +102,10 @@ exec "avizo-service"
     # browsers
     firefox
     librewolf
+    floorp
+    vivaldi
+    vivaldi-ffmpeg-codecs
+    microsoft-edge-dev
 
     # documents
     evince
@@ -146,6 +126,7 @@ exec "avizo-service"
     wget
     lazygit
     zoxide
+    typescript
     #shells
     oh-my-posh
     powershell
@@ -159,6 +140,7 @@ exec "avizo-service"
     jellyfin-media-player
     yt-dlp
     qbittorrent
+    ffmpeg
     # file managers
     nnn
     #misc
@@ -177,12 +159,14 @@ exec "avizo-service"
     file
     which
     tree
+    gnumake
     gnused
     gnutar
     gawk
     zstd
     gnupg
     dippi
+    etcher
   ];
 
   # basic configuration of git, please change to your own
@@ -197,36 +181,19 @@ exec "avizo-service"
   # alacritty - a cross-platform, GPU-accelerated terminal emulator
   programs.alacritty = {
     enable = true;
-    # custom settings
-    # settings = {
-    #   scrolling.multiplier = 5;
-    #   selection.save_to_clipboard = true;
-    # };
-  };
-
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-    # add your custom bashrc here
-    bashrcExtra = ''
-    PATH=$PATH:~/.config/emacs/bin
-    '';
-
-    # set some aliases, feel free to add more or remove some
-    shellAliases = {
-      switch = "cd /etc/nixos; sudo nixos-rebuild switch";
-      boot = "cd /etc/nixos/; sudo nixos-rebuild boot";
-      # flake version of above two commands
-      switchflake="cd /etc/nixos; sudo nixos-rebuild switch --flake .#anvil";
-      bootflake="cd /etc/nixos/; sudo nixos-rebuild boot --flake .#anvil";
-      ls = "eza -all";
-      bashrc = "sudo hx ~/.bashrc";
-      zshrc = "sudo hx ~/.zshrc";
-      confnix = "sudo hx /etc/nixos/configuration.nix";
-      flakenix = "sudo hx /etc/nixos/flake.nix";
-      homenix = "sudo hx /etc/nixos/home.nix";
+    settings = {
+      scrolling.multiplier = 5;
+      selection.save_to_clipboard = true;
     };
   };
+
+
+
+  # programs.fzf = {
+  #   enable = true;
+  #   enableZshIntegration = true;
+  # };
+
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage

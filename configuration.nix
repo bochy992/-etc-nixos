@@ -24,6 +24,36 @@ in
     kernelPackages = pkgs.linuxPackages_zen;
   };
 
+  programs.zsh = {
+    enable = true;
+    # autocd = true;
+    autosuggestions.enable = true;
+    enableCompletion = true;
+    shellAliases = {
+      # sl = "exa";
+      # ls = "exa";
+      # l = "exa -l";
+      # la = "exa -la";
+      # ip = "ip --color=auto";
+      switch = "cd /etc/nixos; sudo nixos-rebuild switch";
+      boot = "cd /etc/nixos/; sudo nixos-rebuild boot";
+      # flake version of above two commands
+      switchflake="cd /etc/nixos; sudo nixos-rebuild switch --flake .#anvil";
+      bootflake="cd /etc/nixos/; sudo nixos-rebuild boot --flake .#anvil";
+      ls = "eza -all";
+      confnix = "sudo hx /etc/nixos/configuration.nix";
+      flakenix = "sudo hx /etc/nixos/flake.nix";
+      homenix = "sudo hx /etc/nixos/home.nix";
+    };
+  };
+
+
+  
+
+  services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+
 security.polkit.enable = true;
   # Enable OpenGL
   hardware.opengl = {
@@ -32,8 +62,8 @@ security.polkit.enable = true;
     driSupport32Bit = true;
   };
 
-  # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
+#   # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia" "intel"];
 
   hardware.nvidia = {
 
@@ -60,7 +90,7 @@ security.polkit.enable = true;
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
     forceFullCompositionPipeline = true;
   };
 
@@ -73,16 +103,13 @@ security.polkit.enable = true;
 		intelBusId = "PCI:0:2:0";
 		nvidiaBusId = "PCI:1:0:0";
 	};
-  
-  fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "DroidSansMono" ]; })
-    dejavu_fonts # mind the underscore! most of the packages are named with a hypen, not this one however
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
-  ];
 
-  # nixpkgs.config.allowAliases = false;
+  boot.kernel.sysctl = { "vm.swappiness" = 1; };
+  virtualisation.podman.enable = true;
+
+
+  
+
   programs.dconf.enable = true;
   # Nvidia Stuff
   services.thermald.enable = lib.mkDefault true;
@@ -97,17 +124,12 @@ security.polkit.enable = true;
   # enable the nix command and flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # # Wayland stuff
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-  environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
 
   # allow unfree and insecure packages
   nixpkgs.config.permittedInsecurePackages = [ "electron-19.1.9" ];
   nixpkgs.config.allowUnfree = true;
-  # nixpkgs.config.nvidia.acceptLicense = true;
+  nixpkgs.config.nvidia.acceptLicense = true;
 
-  # Default Shell
-  users.defaultUserShell = pkgs.powershell;
 
   # Computer name
   networking.hostName = "anvil";
@@ -156,8 +178,8 @@ pcm.!default {
       enable = true;
       daemon.config = {
         default-sample-format = "float32le";
-        default-sample-rate = 48000;
-        alternate-sample-rate = 44100;
+        default-sample-rate = 192000;
+        alternate-sample-rate = 48000;
         default-sample-channels = 2;
         default-channel-map = "front-left,front-right";
         default-fragments = 2;
@@ -176,6 +198,24 @@ pcm.!default {
     };
   };
 
+
+
+nixpkgs.overlays = [
+  (final: prev: {
+    gnome = prev.gnome.overrideScope' (gnomeFinal: gnomePrev: {
+      mutter = gnomePrev.mutter.overrideAttrs ( old: {
+        src = pkgs.fetchgit {
+          url = "https://gitlab.gnome.org/vanvugt/mutter.git";
+          # GNOME 45: triple-buffering-v4-45
+          rev = "0b896518b2028d9c4d6ea44806d093fd33793689";
+          sha256 = "sha256-mzNy5GPlB2qkI2KEAErJQzO//uo8yO0kPQUwvGDwR4w=";
+        };
+      } );
+    });
+  })
+];
+
+nixpkgs.config.allowAliases = false;
   
 
 
@@ -197,7 +237,62 @@ package = pkgs.emacs29-pgtk;
     avizo
     read-edid
     nvidia-offload
+    wayland-utils
+    clinfo
+    gpu-viewer
+    glxinfo
+    vulkan-tools
+    shellcheck
+    neovim
+    gImageReader
+    pandoc
+    nil
+    nixpkgs-fmt
+    gnomeExtensions.appindicator
+    gnome.adwaita-icon-theme
+    nvidia-system-monitor-qt
+    unetbootin
+    nvidia-vaapi-driver
+
+
+
+
   ];
+
+  services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
+  services.dbus.packages = with pkgs; [ gnome2.GConf ];
+
+
+
+environment.gnome.excludePackages = (with pkgs; [
+  gnome-photos
+  gnome-tour
+]) ++ (with pkgs.gnome; [
+  cheese # webcam tool
+  gnome-music
+  gnome-terminal
+  epiphany # web browser
+  geary # email reader
+  evince # document viewer
+  gnome-characters
+  totem # video player
+  tali # poker game
+  iagno # go game
+  hitori # sudoku game
+  atomix # puzzle game
+]);
+
+qt = {
+  enable = true;
+  platformTheme = "gnome";
+  style = "adwaita-dark";
+};
+
+   virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+   virtualisation.virtualbox.host.enableExtensionPack = true;
+     virtualisation.virtualbox.guest.enable = true;
+  virtualisation.virtualbox.guest.x11 = true;
 
 
   system.stateVersion = "23.11"; # Did you read the comment?
