@@ -253,10 +253,7 @@ package = pkgs.emacs29-pgtk;
     nvidia-system-monitor-qt
     unetbootin
     nvidia-vaapi-driver
-
-
-
-
+    GnomeExtensions.pop-shell
   ];
 
   services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
